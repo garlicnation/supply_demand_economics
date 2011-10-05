@@ -3,7 +3,7 @@ from random import Random, expovariate, uniform
 
 class G: # globals
     Rnd = Random(12345)
-    RepairPerson = Resource(4)
+    RepairPerson = Resource(1)
     
 class MachineClass(Process):
     UpRate = 1/1.0 #Breakdown rate
@@ -23,8 +23,8 @@ class MachineClass(Process):
         MachineClass.NUp += 1
         
     def Run(self):
+        print "T= %8.2f\tMachine %d up" % (now(),self.ID)
         while True:
-            print "Machine %d up" % (self.ID)
             UpTime = G.Rnd.expovariate(MachineClass.UpRate)
             yield hold, self, UpTime
             
@@ -35,32 +35,32 @@ class MachineClass(Process):
             if G.RepairPerson.n == 1:
                 MachineClass.NImmedRep += 1
             
-            print "Machine %d down after %f" % (self.ID, UpTime)
+            print "T= %8.2f\tMachine %d down after %f" % (now(),self.ID, UpTime)
             #We request a repairPerson
             
             PreRepair = now()
             yield request, self, G.RepairPerson
             
-            print "Machine %d being repaired after waiting %f" % (self.ID, now()-PreRepair)
+            print "T= %8.2f\tMachine %d being repaired after waiting %f" % (now(),self.ID, now()-PreRepair)
             
             #wait long enough to repair
             RepairTime = G.Rnd.expovariate(MachineClass.RepairRate)
             yield hold, self, RepairTime
             
-            print "Machine %d repaired after %f" % (self.ID, RepairTime)
+            print "T= %8.2f\tMachine %d repaired after %f" % (now(),self.ID, RepairTime)
             #Repair done, release repairperson
             yield release, self, G.RepairPerson
 
 def main():
     initialize()
     
-    machines = 10
+    machines = 2
     
     for i in range(machines):
         M = MachineClass()
         activate(M, M.Run())
         
-    MaxSimtime = 10000.0
+    MaxSimtime = 10.0
     simulate(until=MaxSimtime)
     print "the percentage of up time was", MachineClass.TotalUpTime/(machines*MaxSimtime)
     
