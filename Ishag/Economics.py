@@ -18,10 +18,8 @@ class Citizen ( Process ):
         
     def Run(self,BankAgent):
         while True:
-            # This is Loaning based on wanting energy only  
-            # Implementing another based out of need for innovation
-            # Also look at the credit score  
-            if self.Energy < 5:    
+            # This is Loaning based on wanting energy and Innovation  
+            if self.NeedEnergyLoan():    
                 yield request, self, Bank.bankerperson
                 print "T= %f   Agent %d wants a loan because his Energy: %d is less than 5." % (now(),self.ID,self.Energy)
                 LoanAmount = random.randint(1, 10)
@@ -36,20 +34,19 @@ class Citizen ( Process ):
                 yield hold, self, 2
                 self.Energy -= 1  
             
-            
-            
-
            
-    def Buy(self):
-        print "The agents energy level is down less than 5 so go out Buy"
-        print "But if money is zero then get a loan"
-        print "Buy something"
-         
-    def Sell(self):       
-        print "Sell"
-         
-    def Produce(self):
-        print "Produce"
+    def NeedEnergyLoan(self):
+        if self.Energy < 5:
+            return True
+        else:
+            return False
+        
+    def InnovateLoan(self):
+        if self.Innovate < 5:
+            return True
+        else:
+            return False
+        
         
     def printCitizen(self):
         return 'Agent %d has money: %f and Energy of: %d' %(self.ID, self.Money,self.Energy)
@@ -69,7 +66,7 @@ class Loan():
         self.LoanAmount = LoanAmount  # how much proposed
         self.TimeofBorrowed = now() 
         self.TimeIntervalRate = 0.25   # What are the time intervals that the agent has to pay back
-        self.LoanAge = random.randrange(1, 10, 2)# 3 minutes, For how long is the 
+        self.LoanAge = random.randrange(1, 10, 2)
         self.interest = 0.3  # This interest will be the percentage of the money that goes back to the bank agent
     
     def __str__(self):
@@ -120,18 +117,14 @@ def main():
     # Adding Loans based on energy    
     for count in range(1,population):
         activate(C[count], C[count].Run(C[0])) 
-             
-             
-    # For now don't give a second loan
-    # Put the overall timer and simulations 
+                       
     # start taking the credit score down if they don't pay their loans back at the Time Interval by the interval rate
     # start taking the credit score up if they pay their loans back at the Time Interval by the interval rate    
 
-
     # Adding Loans based on Innovation and Look at their credit score    
- #   for count in range(1,population):
- #       if C[count].Innovate >= 8:  # Also look at the credit score 
- #           C[0].AddLoan(C[count])
+    #   for count in range(1,population):
+    #       if C[count].Innovate >= 8:  # Also look at the credit score 
+    #           C[0].AddLoan(C[count])
            
 
     simulate( until=20 )
@@ -147,3 +140,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
+# Also look at the credit score    
