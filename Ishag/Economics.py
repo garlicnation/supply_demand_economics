@@ -2,7 +2,9 @@
 # CS496 Implementing a Bank Agent and a Citizen Agent
 
 from SimPy.Simulation import *
-from random import Random, expovariate, uniform
+from random import Random
+#from  SimPy.SimulationTrace import *
+ 
 
 class Citizen ( Process ):
     NextID = 1
@@ -33,6 +35,8 @@ class Citizen ( Process ):
                 print "T= %f   Agent %d has an Energy of: %d, it will be decremented by one. \n" % (now(),self.ID,self.Energy)
                 yield hold, self, 2
                 self.Energy -= 1  
+                
+            self.CheckLoanPayback(BankAgent)
             
            
     def NeedEnergyLoan(self):
@@ -42,14 +46,26 @@ class Citizen ( Process ):
             return False
         
     def InnovateLoan(self):
-        if self.Innovate < 5:
+        if self.Innovate > 8:
             return True
         else:
             return False
         
+    def CheckLoanPayback(self,BankAgent):
+        paymoney = [] # paymoney[0] is the loan ID    [1] loan amount    [2] y or n    y for yea its due or n for no its not due yet
+        paymoney = BankAgent.CheckDues(self)
+        print paymoney
+        if paymoney != []:
+            if paymoney[2]=="y": 
+                if (self.Money - paymoney[1])<0:
+                    print "Kill Agent"
+                else:
+                    self.Money -= paymoney[1]
+                    BankAgent.Remit(self,paymoney[0]) 
+        
         
     def printCitizen(self):
-        return 'Agent %d has money: %f and Energy of: %d' %(self.ID, self.Money,self.Energy)
+        print 'Agent %d has money: %f and Energy of: %d' %(self.ID, self.Money,self.Energy)
      
     def __str__(self):
         return 'Agent %d' %(self.ID)
@@ -66,13 +82,38 @@ class Loan():
         self.LoanAmount = LoanAmount  # how much proposed
         self.TimeofBorrowed = now() 
         self.TimeIntervalRate = 0.25   # What are the time intervals that the agent has to pay back
-        self.LoanAge = random.randrange(1, 10, 2)
+        self.LoanAge = 8             #random.randrange(4, 14, 2)
         self.interest = 0.3  # This interest will be the percentage of the money that goes back to the bank agent
+        self.Status = "NonPaid"
+        
+    def GetID(self):
+        return self.ID 
+    
+    def SetStatus(self,stats):
+        self.Status = stats
+        
+    def GetStatus(self):
+        return self.Status 
+        
+    def GetCustomer(self):
+        return self.Customer
+    
+    def GetLoanAge(self):
+        return self.LoanAge
+    
+    def GetLoanAmount(self):
+        return self.LoanAmount
+    
+    def GetTimeofBorrowed(self):
+        return self.TimeofBorrowed
+    
     
     def __str__(self):
         return ('Loan number:' + str(self.ID) + ', for '+ str(self.Customer)+', Loan Amount=' + str(self.LoanAmount)  
         + ', Time Interval Rate=' + str(self.TimeIntervalRate) +',  Time when Borrowed=' + str(self.TimeofBorrowed) 
-        + ', Loan Age=' + str(self.LoanAge) + ',  with an interest=' + str(self.interest))
+        + ', Loan Age=' + str(self.LoanAge) + ',  with an interest=' + str(self.interest)) + ", with a Status: " + self.Status
+        
+        
 
 
 
@@ -86,12 +127,33 @@ class Bank():
                 
     def AddLoan(self,Customer,LoanAmount):
         print "\nThe Bank gave "+ str(Customer)+ " the Loan in the amount of " + str(LoanAmount) +"." 
-        self.LoanList.append(Loan(Customer,LoanAmount)) 
+        self.LoanList.append(Loan(Customer,LoanAmount))
         
     def LoanListPrint(self):
         print "\nThe Loan List:"
         for item in self.LoanList:    
             print item 
+            
+    def CheckDues(self,Customer):
+        l = []
+        for item in self.LoanList:
+            if (Customer==item.GetCustomer()):
+                if (item.GetStatus() == "NonPaid"):
+                    if ((item.GetLoanAge() + item.GetTimeofBorrowed())== now()):
+                        l.insert(0,item.GetID())
+                        l.insert(1,item.GetLoanAmount())
+                        l.insert(2,"y")
+        return l
+              
+        
+    def Remit(self,Customer,LoanID):
+        for item in self.LoanList:
+            if (Customer==item.Customer and LoanID==item.ID):
+                item.SetStatus("Paid")
+                
+            
+        
+        
             
     def __str__(self):
         return 'The Bank is ' + str(self.ID)
@@ -103,7 +165,7 @@ def main():
 # Beginning of main simulation program
     initialize()
     
-    population = 5 # including the bank agent
+    population = 2 # including the bank agent
     C = []  # List of all Citizens   
  
     C.append(Bank())   # add the bank agent to Citizen lists
@@ -131,7 +193,7 @@ def main():
     
     print "\n"
     for count in range(1,population):   
-        print str(C[count].printCitizen())
+        C[count].printCitizen()
     
 
     #Printing The List of Loans
@@ -141,4 +203,5 @@ def main():
 if __name__ == '__main__':
     main()
     
-# Also look at the credit score    
+# Also look at the credit score   
+#Go Through the Yield Statement in the documentaion 
