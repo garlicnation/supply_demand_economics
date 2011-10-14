@@ -21,6 +21,8 @@ class Citizen ( Process ):
     def Run(self,BankAgent):
         while True:
             # This is Loaning based on wanting energy and Innovation  
+            
+            
             if self.NeedEnergyLoan():    
                 yield request, self, Bank.bankerperson
                 print "T= %f   Agent %d wants a loan because his Energy: %d is less than 5." % (now(),self.ID,self.Energy)
@@ -52,16 +54,17 @@ class Citizen ( Process ):
             return False
         
     def CheckLoanPayback(self,BankAgent):
-        paymoney = [] # paymoney[0] is the loan ID    [1] loan amount    [2] y or n    y for yea its due or n for no its not due yet
-        paymoney = BankAgent.CheckDues(self)
-        print paymoney
-        if paymoney != []:
-            if paymoney[2]=="y": 
-                if (self.Money - paymoney[1])<0:
+        self.paymoney = [] # paymoney[0] is the loan ID    [1] loan amount    [2] y or n    y for yea its due or n for no its not due yet
+        self.paymoney = BankAgent.CheckDues(self)
+        
+        if self.paymoney != []:
+            if self.paymoney[2]=="y": 
+                if (self.Money - self.paymoney[1])<0:
                     print "Kill Agent"
                 else:
-                    self.Money -= paymoney[1]
-                    BankAgent.Remit(self,paymoney[0]) 
+                    self.Money -= self.paymoney[1]
+                    BankAgent.Remit(self,self.paymoney[0]) 
+                    print 'T= %f   Agent %d has paidoff Loan number: %d \n' % (now(),self.ID,self.paymoney[0])
         
         
     def printCitizen(self):
@@ -135,15 +138,16 @@ class Bank():
             print item 
             
     def CheckDues(self,Customer):
-        l = []
+        self.l = []
         for item in self.LoanList:
             if (Customer==item.GetCustomer()):
                 if (item.GetStatus() == "NonPaid"):
                     if ((item.GetLoanAge() + item.GetTimeofBorrowed())== now()):
-                        l.insert(0,item.GetID())
-                        l.insert(1,item.GetLoanAmount())
-                        l.insert(2,"y")
-        return l
+                        self.l.insert(0,item.GetID())
+                        self.l.insert(1,item.GetLoanAmount())
+                        self.l.insert(2,"y")
+        
+        return self.l
               
         
     def Remit(self,Customer,LoanID):
@@ -165,7 +169,7 @@ def main():
 # Beginning of main simulation program
     initialize()
     
-    population = 2 # including the bank agent
+    population = 3 # including the bank agent
     C = []  # List of all Citizens   
  
     C.append(Bank())   # add the bank agent to Citizen lists
