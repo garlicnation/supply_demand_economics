@@ -1,4 +1,4 @@
-from  SimPy.Simulation import *
+from  SimPy.SimulationTrace import *
 from random import Random, expovariate, uniform
 
 class G: # globals
