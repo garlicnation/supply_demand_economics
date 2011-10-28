@@ -27,8 +27,6 @@ class Rule(object):
     
     
 class TransportModeRule(Rule):
-    def __init__(self, state):
-        super(TransportModeRule, self).__init__(state)
         
     def precondition(self):
         return super(TransportModeRule, self).precondition(['av_speed'])
@@ -40,8 +38,6 @@ class TransportModeRule(Rule):
             self.state['drive'] = True
             
 class AirplaneChoiceRule(Rule):
-    def __init__(self,state):
-        super(AirplaneChoiceRule, self).__init__( state)
         
     def precondition(self):
         reqs = ['fly', 'is_pilot']
@@ -67,8 +63,6 @@ class AirplaneChoiceRule(Rule):
                 self.state['fly_bon'] = True
             
 class CarRule(Rule):
-    def __init__(self, state):
-        super(CarRule, self).__init__( state)
         
     def precondition(self):
         reqs = ['drive', 'motorcycle']
@@ -78,8 +72,6 @@ class CarRule(Rule):
         self.state['car'] = self.state['drive'] and not self.state['motorcycle']
         
 class MotorcycleRule(Rule):
-    def __init__(self, state):
-        super(MotorcycleRule, self).__init__( state)
         
     def precondition(self):
         reqs = ['drive']
