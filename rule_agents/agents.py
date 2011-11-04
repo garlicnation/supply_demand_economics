@@ -6,7 +6,7 @@ def Agent(object):
         self.actions = {}
         self.state = {'energy':100, 'money':100, 'time':0, 'capabilities':[], 'materials':[]}
         for action in actions:
-            self.actions["%s%d" % (action(self.state), actionID)] = action
+            self.actions["%s%d" % (str(action), actionID)] = action(self.state)
             actionID += 1
         
         """An agent's state is the collection of keys and values that 
