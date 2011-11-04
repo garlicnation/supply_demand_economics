@@ -42,48 +42,6 @@ class TransportModeAction(Action):
         else:
             self.state['drive'] = True
             
-class AirplaneChoiceAction(Action):
-        
-    def precondition(self):
-        reqs = ['fly', 'is_pilot']
-        return super(AirplaneChoiceAction, self).precondition(reqs)
-        
-    def rule(self):
-        if self.state['fly']:
-            if not self.state['is_pilot']:
-                self.state['fly_commercial'] = True
-                
-            if (self.state['like_scenery'] and 
-                    self.state['av_speed'] < 200 and
-                    self.state['av_speed'] > 100):
-                self.state['fly_bon'] = True
-                
-            if (self.state['like_scenery'] and 
-                    self.state['av_speed'] < 100):
-                    self.state['fly_tcart'] = True
-                
-            if (self.state['like_scenery'] and 
-                    self.state['av_speed'] < 200 and
-                    self.state['av_speed'] > 100):
-                self.state['fly_bon'] = True
-            
-class CarAction(Action):
-        
-    def precondition(self):
-        reqs = ['drive', 'motorcycle']
-        return super(CarAction, self).precondition(reqs)
-        
-    def rule(self):
-        self.state['car'] = self.state['drive'] and not self.state['motorcycle']
-        
-class MotorcycleAction(Action):
-        
-    def precondition(self):
-        reqs = ['drive']
-        return super(MotorcycleAction, self).precondition(reqs)
-        
-    def rule(self):
-        self.state['motorcycle'] = self.state['drive'] and self.state['like_scenery']
             
 class Agent(object):
     def __init__(self, rules=[], state = {'energy': 100, 'time': 0, 'money': 100, 'skills':['S1', 'S2']}):
