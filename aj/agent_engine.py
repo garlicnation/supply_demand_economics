@@ -2,7 +2,7 @@ class NoneDict(dict):
     def __missing__(self,key):
         return None
 
-class Rule(object):
+class Action(object):
     "This rule is evaluated if requirements are met and changes the state if they are"
     def __init__(self, state):
         self.state = state
@@ -15,21 +15,26 @@ class Rule(object):
         reqmet = self.precondition()
         if not reqmet:
             return reqmet
-        self.rule()
+        self.result()
         return True
     
+    #Precondition checks to see if we want to execute the rule
     def precondition(self, reqs):
         for req in reqs:
             if self.state[req] == None:
                 return False
         return True
+    
+    #Once the precondition has passed, result modifies the state accordingly
+    def result(self):
+        pass
         
     
     
-class TransportModeRule(Rule):
+class TransportModeAction(Action):
         
     def precondition(self):
-        return super(TransportModeRule, self).precondition(['av_speed'])
+        return super(TransportModeAction, self).precondition(['av_speed'])
         
     def rule(self):
         if self.state['av_speed'] > 60:
@@ -37,11 +42,11 @@ class TransportModeRule(Rule):
         else:
             self.state['drive'] = True
             
-class AirplaneChoiceRule(Rule):
+class AirplaneChoiceAction(Action):
         
     def precondition(self):
         reqs = ['fly', 'is_pilot']
-        return super(AirplaneChoiceRule, self).precondition(reqs)
+        return super(AirplaneChoiceAction, self).precondition(reqs)
         
     def rule(self):
         if self.state['fly']:
@@ -62,55 +67,64 @@ class AirplaneChoiceRule(Rule):
                     self.state['av_speed'] > 100):
                 self.state['fly_bon'] = True
             
-class CarRule(Rule):
+class CarAction(Action):
         
     def precondition(self):
         reqs = ['drive', 'motorcycle']
-        return super(CarRule, self).precondition(reqs)
+        return super(CarAction, self).precondition(reqs)
         
     def rule(self):
         self.state['car'] = self.state['drive'] and not self.state['motorcycle']
         
-class MotorcycleRule(Rule):
+class MotorcycleAction(Action):
         
     def precondition(self):
         reqs = ['drive']
-        return super(MotorcycleRule, self).precondition(reqs)
+        return super(MotorcycleAction, self).precondition(reqs)
         
     def rule(self):
         self.state['motorcycle'] = self.state['drive'] and self.state['like_scenery']
             
-class RuleBase(object):
-    def __init__(self, rules=[]):
+class Agent(object):
+    def __init__(self, rules=[], state = {'energy': 100, 'time': 0, 'money': 100, 'skills':['S1', 'S2']}):
         "A list of the rules to be considered"
         self.rules = rules
-        self.state = None
+        self.state = NoneDict(state)
+        self.inbox = {}
+        self.outbox = {}
         
-    "Modify the state based on our rules"
-    def query(self, state):
-        none_state = NoneDict(state)
+    """Modify the state based on our rules
+       Returns false if the agent dies and should be removed from the queue"""
+    def do_turn(self):
         to_evaluate = []
         for rule in self.rules:
-            to_evaluate.append(rule(none_state))
+            to_evaluate.append(rule(self.state))
+        
+        self.state['inbox'] = self.inbox
+        self.inbox = {}
+        self.outbox = {}
             
         finished = False
         while len(to_evaluate) > 0 and not finished:
             finished = True
-            for rule in to_evaluate[:]:
+            to_delete = []
+            for rule in to_evaluate:
                 print "Trying a rule"
                 if rule.check():
                     print "We evaluated %s!" % (rule)
-                    to_evaluate.remove(rule)
+                    to_delete.append(rule)
                     finished = False
+            
+            
                     
             print "%d rules left" % (len(to_evaluate))
                     
-        return none_state
+        return True
 
 
 def main():
     
-    rb = RuleBase([AirplaneChoiceRule, CarRule, MotorcycleRule, TransportModeRule])
+    rb = Agent([AirplaneChoiceAction, CarAction, MotorcycleAction, TransportModeAction])
     
     state = rb.query({"like_scenery": True, "pilot": False, "av_speed": 45})
     
