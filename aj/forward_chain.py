@@ -14,7 +14,7 @@ class Rule(object):
         #See if we're ready to evaluate the rule
         reqmet = self.precondition()
         if not reqmet:
-            return reqmet
+            return False
         self.rule()
         return True
     
