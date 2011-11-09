@@ -1,3 +1,7 @@
+class DieException(Exception):
+    def __init__(self):
+        Exception.__init__(self, 'Agent is dead! Maybe he should suck less next time')
+
 class Action(object):
     "This rule is evaluated if requirements are met and changes the state if they are"
     def __init__(self, state):
@@ -27,3 +31,12 @@ class Action(object):
     #precondition met. Let's effect the state as we will
     def consequences(self):
         pass
+    
+class DieAction(Action):
+    def precondition(self):
+        if self.state['energy'] <= 0:
+            return True
+        
+    def consequences(self):
+        self.state['dead'] = True
+        raise Exception('dead')
