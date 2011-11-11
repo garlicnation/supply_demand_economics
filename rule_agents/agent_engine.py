@@ -25,13 +25,13 @@ class EconomicAgentEngine(AgentEngine):
     def run_engine(self, turns=100):
         
         while turns > 0 and len(self.agents) >0:
-            toremove = []
+            dead = []
             for agent in self.agents:
                 print "In run_engine", agent
                 if self.agents[agent].do_turn() == False:
-                    toremove.append(agent)
+                    dead.append(agent)
             
-            for agent in toremove:
+            for agent in dead:
                 self.agents.pop(agent)
                 
             turns -=1
@@ -40,5 +40,4 @@ class EconomicAgentEngine(AgentEngine):
 
 if __name__=="__main__":
     engine = EconomicAgentEngine()
-    
     engine.run_engine()                
