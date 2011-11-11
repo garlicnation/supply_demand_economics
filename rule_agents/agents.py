@@ -1,7 +1,11 @@
-def Agent(object):
-    
-    def __init__(self, actions, state):
+from actions import *
+agentid = 0
+class Agent(object):
+    def __init__(self, actions, state, name = "Agent %d" % agentid):
         "An agent's actions are the collection of rules and consequences that govern an agent's behavior"
+        global agentid 
+        agentid += 1
+        self.name = name
         actionID = 0
         self.actions = {}
         self.state = {'energy':100, 'money':100, 'time':0, 'capabilities':[], 'materials':[]}
@@ -37,14 +41,23 @@ def Agent(object):
             toRemove = set()
             for action in currentActions:
                 print "Trying a rule"
-                if action.evaluate():
-                    print "We evaluated %s!" % (action)
-                    toRemove.add(action)
-                    finished = False
+                try:
+                    if action.evaluate():
+                        print "We evaluated %s!" % (action)
+                        toRemove.add(action)
+                        finished = False
+                except DieException:
+                    print "%s has died" % self.name
+                    return False 
             
             currentActions -= toRemove        
             print "%d rules left" % (len(currentActions))
                     
         return True
+
     
+class CitizenAgent(Agent):
+    def __init__(self, state, name):
+        agents = [RunAction, DieAction]
+        Agent.__init__(self, agents, state, name)
     

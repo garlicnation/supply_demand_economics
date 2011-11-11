@@ -38,5 +38,13 @@ class DieAction(Action):
             return True
         
     def consequences(self):
-        self.state['dead'] = True
-        raise Exception('dead')
+        self.state['dead'] = "True"
+        raise DieException
+    
+class RunAction(Action):
+    def precondition(self):
+        if self.state['energy'] >= 10:
+            return True
+        
+    def consequences(self):
+        self.state['energy'] -= 10
