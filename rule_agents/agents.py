@@ -8,7 +8,7 @@ class Agent(object):
         self.name = name
         actionID = 0
         self.actions = {}
-        self.state = {'energy':100, 'money':100, 'time':0, 'capabilities':[], 'materials':[]}
+        self.state = {'energy':100, 'money':40, 'time':0, 'capabilities':["minning"], 'materials':[], 'tools':["book"]}
         for action in actions:
             self.actions["%s%d" % (str(action), actionID)] = action(self.state)
             actionID += 1
@@ -33,7 +33,8 @@ class Agent(object):
        Evaluates all the actions we're going to this turn.
        Throws a DieException if the agent is unable to continue 
        acting in the simulation"""
-    def do_turn(self):   
+    def do_turn(self): 
+          
         finished = False
         currentActions = set(self.actions.itervalues())
         while len(currentActions) > 0 and not finished:
@@ -50,7 +51,10 @@ class Agent(object):
                     print "%s has died" % self.name
                     return False 
             
-            currentActions -= toRemove        
+            currentActions -= toRemove
+            print "Agent %s has Money: %d" % (self.name ,self.state['money'])   
+            print "Agent " + self.name +  " has Materials: " 
+            print self.state['materials']
             print "%d rules left" % (len(currentActions))
                     
         return True
@@ -58,6 +62,16 @@ class Agent(object):
     
 class CitizenAgent(Agent):
     def __init__(self, state, name):
-        agents = [RunAction, DieAction]
-        Agent.__init__(self, agents, state, name)
-    
+        actions = [RunAction, DieAction, MineAction]
+        Agent.__init__(self, actions, state, name)
+        
+class BankAgent(Agent):
+    def __init__(self, state, name):
+        actions = [RunAction, DieAction, GiveLoanAction]
+        Agent.__init__(self, actions, state, name)
+        
+
+class FarmerAgent(Agent):
+    def __init__(self, state, name):
+        actions = [RunAction, DieAction, FarmAction, NeedLoanAction]
+        Agent.__init__(self, actions, state, name)
