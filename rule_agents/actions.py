@@ -6,7 +6,7 @@ class Action(object):
     "This rule is evaluated if requirements are met and changes the state if they are"
     def __init__(self, state):
         self.state = state
-      
+        self.time_required = 10
     """evaluate()
           Returns true if the rule was evaluated
           Returns false if the rule wasn't evaluated
@@ -39,6 +39,7 @@ class DieAction(Action):
         
     def consequences(self):
         self.state['dead'] = "True"
+        self.time_required = None
         raise DieException
     
 class RunAction(Action):
@@ -48,6 +49,7 @@ class RunAction(Action):
         
     def consequences(self):
         self.state['energy'] -= 10
+        self.time_required = 20
         
         
 class NeedLoanAction(Action):
@@ -62,6 +64,7 @@ class NeedLoanAction(Action):
         # and then give the money or not
        print "bank"
         #  banker.state['inbox'] = self.id, "need a loan" 
+        self.time_required = 2
 
 
 #  How does the inbox will look like   agentname:"message"
@@ -81,7 +84,8 @@ class GiveLoanAction(Action):   # for the banker
         for items in agents:
             items.state['money'] += 20 
         
-        # Record the loam in a loan class       
+        # Record the loam in a loan class   
+        self.time_required = 5    
         
         
         
@@ -94,6 +98,7 @@ class SellAction(Action):
     def consequences(self):
         self.state['energy'] -= 10
         self.state['tools'] -= 1
+        self.time_required = 15
         
 
 class BuyAction(Action):
@@ -106,6 +111,7 @@ class BuyAction(Action):
         self.state['energy'] -= 10
         self.state['tools'].append("New tool")   
         # We can also add material 
+        self.time_required = 10
         
 
 class FarmAction(Action):
@@ -118,6 +124,7 @@ class FarmAction(Action):
         
     def consequences(self):
         self.state['energy'] += 10
+        self.time_required = 40
                
         
 class LearnAction(Action):
@@ -131,6 +138,7 @@ class LearnAction(Action):
     def consequences(self):
         self.state['energy'] -= 10
         self.state['capabilities'].append("New Capability")
+        self.time_required = 20
          
 
 class ManufactureAction(Action):
@@ -144,6 +152,7 @@ class ManufactureAction(Action):
     def consequences(self):
         self.state['energy'] -= 10
         self.state['tools'].append("New tool")
+        self.time_required = 50
         
         
     
@@ -159,6 +168,7 @@ class MineAction(Action):
     def consequences(self):
         self.state['energy'] -= 10
         self.state['materials'].append("New materials")
+        self.time_required = 100
 
 
 

@@ -4,6 +4,7 @@
 
 
 from agents import CitizenAgent
+from heapq import *
 
 
 class AgentEngine(object):
@@ -14,25 +15,22 @@ class AgentEngine(object):
 class EconomicAgentEngine(AgentEngine):
     
     def __init__(self):
-        agents = {}
+        agents = []
         for i in range(10):
             state = {}
             a = CitizenAgent(state, "Agent %d" % i)
-            agents[a.name] = a
+            agents.append((0, a))
+            
         AgentEngine.__init__(self, agents)
             
         
     def run_engine(self, turns=100):
-        
+        heapify(self.agents)
         while turns > 0 and len(self.agents) >0:
-            dead = []
-            for agent in self.agents:
-                print "In run_engine", agent
-                if self.agents[agent].do_turn() == False:
-                    dead.append(agent)
-            
-            for agent in dead:
-                self.agents.pop(agent)
+            current_time, agent = heappop(self.agents)
+            time_for_turn = agent.do_turn()
+            if time_for_turn != None:
+                heappush(self.agents, (current_time+time_for_turn, agent))
                 
             turns -=1
             

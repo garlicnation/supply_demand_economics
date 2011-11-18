@@ -45,11 +45,13 @@ class Agent(object):
                 try:
                     if action.evaluate():
                         print "We evaluated %s!" % (action)
+                        if not action.time_required == None:
+                            return action.time_required
                         toRemove.add(action)
                         finished = False
                 except DieException:
                     print "%s has died" % self.name
-                    return False 
+                    return None 
             
             currentActions -= toRemove
             print "Agent %s has Money: %d" % (self.name ,self.state['money'])   
