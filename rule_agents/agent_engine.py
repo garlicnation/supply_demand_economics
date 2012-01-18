@@ -1,6 +1,7 @@
 # Based o:n forward_chain.py and agent_engine.py/
 # Provides the control structure that starts a general rule-based multi-agent simulation
 # Along with a reference implementation attempting to model the economy
+# new
 
 
 from agents import CitizenAgent
