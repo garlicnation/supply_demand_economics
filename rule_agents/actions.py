@@ -63,8 +63,8 @@ class NeedLoanAction(Action):
         # Then when the banker sees it. He will evaluate the request 
         # and then give the money or not
        print "bank"
-        #  banker.state['inbox'] = self.id, "need a loan" 
-        self.time_required = 2
+       #  banker.state['inbox'] = self.id, "need a loan"
+       self.time_required = 2
 
 
 #  How does the inbox will look like   agentname:"message"
