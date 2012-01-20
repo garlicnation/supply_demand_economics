@@ -7,6 +7,8 @@ class Action(object):
     def __init__(self, state):
         self.state = state
         self.time_required = 10
+        self.message = None
+        # This should look like (message, target), that is, ("Give me a loan", bank_agent)
     """evaluate()
           Returns true if the rule was evaluated
           Returns false if the rule wasn't evaluated
@@ -24,7 +26,7 @@ class Action(object):
     #We simply check to see if certain facts are present in our rul
     def precondition(self, reqs):
         for req in reqs:
-            if self.state[req] == None:
+            if self.state[req] is None:
                 return False
         return True
         
@@ -63,6 +65,7 @@ class NeedLoanAction(Action):
         # Then when the banker sees it. He will evaluate the request 
         # and then give the money or not
        print "bank"
+       self.message = ('I need a loan', self.state['bank_agent'])
        #  banker.state['inbox'] = self.id, "need a loan"
        self.time_required = 2
 

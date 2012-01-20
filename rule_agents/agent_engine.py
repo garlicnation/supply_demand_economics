@@ -3,7 +3,7 @@
 # Along with a reference implementation attempting to model the economy
 
 
-from agents import CitizenAgent
+from agents import CitizenAgent, BankAgent
 from heapq import *
 
 
@@ -16,8 +16,10 @@ class EconomicAgentEngine(AgentEngine):
     
     def __init__(self):
         agents = []
-        for i in range(10):
-            state = {}
+        bank_agent = BankAgent({}, "The bank")
+        agents.append((0,bank_agent))
+        for i in range(3):
+            state = {"bank_agent":bank_agent, "agents":agents}
             a = CitizenAgent(state, "Agent %d" % i)
             agents.append((0, a))
             

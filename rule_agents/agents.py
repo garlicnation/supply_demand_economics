@@ -45,7 +45,14 @@ class Agent(object):
                 try:
                     if action.evaluate():
                         print "We evaluated %s!" % (action)
-                        if not action.time_required == None:
+                        #If the action requires sending a message, we send it, making sure to reference ourselves if necessary
+                        if action.message is not None:
+                            msg, receiver = action.message
+                            receiver.inbox.append((msg, self))
+
+
+                        #If the action takes time, we return
+                        if action.time_required is not None:
                             return action.time_required
                         toRemove.add(action)
                         finished = False
