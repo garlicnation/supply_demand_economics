@@ -1,3 +1,5 @@
+from rule_agents import agents
+
 class DieException(Exception):
     def __init__(self):
         Exception.__init__(self, 'Agent is dead! Maybe he should suck less next time')
