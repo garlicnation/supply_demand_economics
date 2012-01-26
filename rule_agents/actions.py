@@ -35,6 +35,8 @@ class Action(object):
     #precondition met. Let's effect the state as we will
     def consequences(self):
         pass
+
+    def getMessage(self):
     
 class DieAction(Action):
     def precondition(self):
