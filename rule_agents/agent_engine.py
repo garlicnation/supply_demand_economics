@@ -30,7 +30,7 @@ class EconomicAgentEngine(AgentEngine):
         heapify(self.agents)
         while turns > 0 and len(self.agents) >0:
             current_time, agent = heappop(self.agents)
-            time_for_turn = agent.do_turn()
+            time_for_turn = agent.do_turn(current_time)
             if time_for_turn != None:
                 heappush(self.agents, (current_time+time_for_turn, agent))
 

@@ -31,7 +31,7 @@ received in the last turn. This collection is processed once for every call to d
 
 
 
-    def do_turn(self):
+    def do_turn(self, current_time):
         """
         Executes a turn.
         Evaluates all the actions we're going to this turn.
@@ -40,6 +40,7 @@ received in the last turn. This collection is processed once for every call to d
         """
         print "The inbox of " + str(self.name)+" has the value "+  str(self.inbox)
         self.state['inbox'] = self.inbox;
+        self.state['time'] = current_time
         print "The state inbox of " + str(self.name)+" has the value "+  str(self.state['inbox'])
         print str(self.name)+" has money "+  str(self.state['money'])
         finished = False
